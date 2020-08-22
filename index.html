@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<style>
+  .box {
+    width: 400px;
+    height: 400px;
+    border: 1px solid #000;
+  }
+</style>
+
+<body>
+  <input type="text" placeholder="请输入内容" name="" id="">
+  <button>提交请求</button>
+  <!-- 显示结果 -->
+  <div class="box"></div>
+
+  <script>
+
+    /*
+     参数一：url：连接的websocket属性
+     参数二：可选的，指定连接的协议
+     var socket = new WebSocket('url',[protocol]);
+   */
+
+    /*
+    websocket事件：
+    open: 连接建立时触发
+    message: 客户端收到服务端数据时触发
+    error: 通信发生错误时触发
+    close: 连接关闭时触发
+  */
+
+    /*
+      websocket方法:
+      send: 发送数据
+      close: 关闭连接
+    */
+
+    var div = document.querySelector('div')
+    var input = document.querySelector('input')
+    var button = document.querySelector('button')
+
+    const TYPE_ENTER = 0;//加入聊天
+    const TYPE_LEAVE = 1;//离开聊天
+    const TYPE_MSG = 2;//正常聊天
+
+    //1.创建连接
+    var socket = new WebSocket('ws://localhost:3000');
+
+    //2.连接成功
+    socket.addEventListener('open', function () {
+      div.innerHTML = '连接服务成功'
+    })
+
+    //3.发送消息
+    button.addEventListener('click', function () {
+      var val = input.value;
+      socket.send(val)
+    })
+
+    //4.接收数据
+    socket.addEventListener('message', function (e) {
+      // div.innerHTML += e.data
+      var data = JSON.parse(e.data);
+      var dv = document.createElement('div');
+      dv.innerText = data.msg + "---" + data.time;
+      if(data.type === TYPE_ENTER){
+        dv.style.color = '#0f0'
+      }else if(data.type === TYPE_LEAVE){
+        dv.style.color = '#f00'
+      }else{
+        dv.style.color = '#00f'
+      }
+      div.appendChild(dv)
+    })
+
+  </script>
+</body>
+
+</html>
